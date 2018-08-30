@@ -1,0 +1,6 @@
+# Needed to play games
+numpy==1.15.1
+
+
+# Needed for exploration, notebooks, etc
+jupyter==1.0.0
