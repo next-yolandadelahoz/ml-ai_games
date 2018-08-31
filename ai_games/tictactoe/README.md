@@ -10,5 +10,9 @@ This is the classic [tic-tac-toe](https://en.wikipedia.org/wiki/Tic-tac-toe) gam
 * Q-Learning (Reinforcement Learning).
 
 
+## Play a game!
+TODO
+
+
 ## Experiments
-* On Q-Learning training.
+* [On Q-Learning training](NB01-rl_tests.ipynb).

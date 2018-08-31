@@ -18,7 +18,7 @@ class QLearner:
     def set_player(self, player):
         self.player = player
 
-        
+
     def get_move(self, board):
         """
         PARAMETERS
@@ -116,6 +116,37 @@ class QLearner:
             else:  # Don't know reward, play more...
                 reward, Q_diff_avg, depth  = self._train_1_game(lr, f_df, board, opponent)
                 depth += 1
+        # I know how good the action is (reward)
+        Q_diff = self._update_Q(state, action, reward, lr, f_df(depth))
+        Q_diff_avg += Q_diff/(depth)
+        return (reward, Q_diff_avg, depth)
+
+
+
+    def _autotrain_1_game(self, lr, f_df, board):
+        """Train agent by playing against itself
+        """
+        reward = None  # Calculate a reward for the move
+        # Agent's move
+        # print("agent")
+        row,col = self.get_move(board)
+        state = hash(board)  # This is the state!
+        action = (row, col)  # Will be a good action?
+        board.move(row, col, self.player)
+        # print(board.get_txt())
+        if board.is_winner(self.player):  # Agent wins
+            reward = 1
+        elif board.is_finished():  # Draw
+            reward = 0
+        if reward!=None:
+            depth = 1  # Game Over
+            Q_diff_avg = 0
+        else:
+            self.player = 2 if self.player==1 else 1  # Now I'm opponent
+            reward, Q_diff_avg, depth  = self._autotrain_1_game(lr, f_df, board)
+            depth += 1
+            self.player = 2 if self.player==1 else 1  # Back to player
+            reward = -reward
         # I know how good the action is (reward)
         Q_diff = self._update_Q(state, action, reward, lr, f_df(depth))
         Q_diff_avg += Q_diff/(depth)
