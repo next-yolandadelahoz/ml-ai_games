@@ -1,5 +1,5 @@
 
-
+import functools
 import random
 
 import numpy as np
@@ -17,12 +17,12 @@ class Minimax:
         self.player = player
         self.opponent = 2 if player==1 else 1
 
-    
+
     def _max_score(self, board, alpha, beta):
         """Agent moves, pick best action.
         """
         if board.is_winner(self.opponent):  # Terminal: opponent wins
-            score = -100
+            score = -1
         elif board.is_finished():  # Terminal: it's a draw
             score = 0
         else: # Non terminal
@@ -35,6 +35,7 @@ class Minimax:
                 alpha = score if score>alpha else alpha
         return score
 
+
     def _min_score(self, board, alpha, beta):
         """Opponent moves, pick best action.
 
@@ -44,7 +45,7 @@ class Minimax:
         """
         # Terminal position, player made the last move
         if board.is_winner(self.player):  # Terminal: player wins
-            score = 100
+            score = 1
         elif board.is_finished():  # Terminal: it's a draw
             score = 0
         else:
@@ -56,6 +57,7 @@ class Minimax:
                     break
                 beta = score if score<beta else beta
         return score
+
 
     def get_move(self, board):
         """Perform a move based on a minimax strategy with alpha-beta prunning.
