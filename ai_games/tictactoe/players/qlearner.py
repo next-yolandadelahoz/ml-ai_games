@@ -2,6 +2,8 @@
 from collections import defaultdict
 import random
 
+import numpy as np
+
 
 class QLearner:
 
@@ -19,9 +21,14 @@ class QLearner:
         self.player = player
 
 
-    def get_move(self, board):
+    def get_move(self, board, p=False):
         """
         PARAMETERS
+        board: Board
+          Current game state.
+        p: bool
+          If True, the next will be randomly sampled from Q values.
+          If False, choose randomly from the best Q values (if several).
 
         RETURNS
         retval: (int,int)
@@ -39,6 +46,12 @@ class QLearner:
             # Initialize candidates in Q so they apear in next iterations
             for action in candidates:
                 self.Q[state][action] = 0
+        elif p==True:  # Sample from Q values
+            actions, values = zip(*candidates)
+            probs = np.exp(np.array(values)*5)  # No 0 probs, scaling *5
+            probs /= probs.sum()  # Probs vector sum 1
+            candidate_i = np.random.choice(len(actions), size=1, p=probs)[0]
+            candidates = [actions[candidate_i]]
         else:  # Pick randomly from best moves
             max_score = max(candidates, key=lambda x: x[1])[1]
             candidates = [
@@ -88,7 +101,7 @@ class QLearner:
         reward = None  # Calculate a reward for the move
         # Agent's move
         # print("agent")
-        row,col = self.get_move(board)
+        row,col = self.get_move(board, p=True)
         state = hash(board)  # This is the state!
         action = (row, col)  # Will be a good action?
         board.move(row, col, self.player)
@@ -129,7 +142,7 @@ class QLearner:
         reward = None  # Calculate a reward for the move
         # Agent's move
         # print("agent")
-        row,col = self.get_move(board)
+        row,col = self.get_move(board, p=True)
         state = hash(board)  # This is the state!
         action = (row, col)  # Will be a good action?
         board.move(row, col, self.player)
