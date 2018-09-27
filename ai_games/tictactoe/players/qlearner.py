@@ -34,7 +34,7 @@ class QLearner:
         retval: (int,int)
             Action to take (row, col).
         """
-        state = hash(board)
+        state = board.get_state()  # Must be hasheable
         candidates = list(self.Q[state].items())  # [(action,value)]
         # print(candidates)
         if candidates == []:  # Generate candidates, any possible move is OK
@@ -102,7 +102,7 @@ class QLearner:
         # Agent's move
         # print("agent")
         row,col = self.get_move(board, p=True)
-        state = hash(board)  # This is the state!
+        state = board.get_state()  # This is the state!
         action = (row, col)  # Will be a good action?
         board.move(row, col, self.player)
         # print(board.get_txt())
@@ -143,7 +143,7 @@ class QLearner:
         # Agent's move
         # print("agent")
         row,col = self.get_move(board, p=True)
-        state = hash(board)  # This is the state!
+        state = board.get_state()  # This is the state!
         action = (row, col)  # Will be a good action?
         board.move(row, col, self.player)
         # print(board.get_txt())

@@ -84,8 +84,9 @@ class Board:
         ])
 
 
-    def __hash__(self):
-        return hash(self.board.tobytes())
+    def get_state(self):
+        # return hash(self.board.tobytes())  # More efficient, but less debuggable (IRL)
+        return tuple(self.board.flat)
 
 
     def is_finished(self):
