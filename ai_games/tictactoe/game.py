@@ -4,6 +4,7 @@ from players.human import Human
 from players.minimax import Minimax
 from players.qlearner import QLearner
 from players.random import Random
+import argparse
 
 
 def play_game(player1, player2, board):
@@ -38,12 +39,25 @@ def play_game(player1, player2, board):
 
 
 if __name__=="__main__":
-    # TODO: from args choose players -p1 -p2 [ human, minimax, minimax_prob, qlearned ]
+    # Argument parser
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-p1", default='human', choices=['human', 'minimax', 'qlearner', 'random'], help="Add player 1")
+    parser.add_argument("-p2", default='minimax', choices=['human', 'minimax', 'qlearner', 'random'], help="Add player 2")
+    args = parser.parse_args()
+
+    players = {
+        'human': Human,
+        'minimax': Minimax,
+        'qlearner': QLearner,
+        'random': Random
+    }
+
     winner, board = play_game(
-        Human(1),
-        Minimax(2),
+        players.get(args.p1)(1),
+        players.get(args.p2)(2),
         Board()
     )
+
     # TODO: clear screen
     if winner==-1:
         print("It's a draw")
