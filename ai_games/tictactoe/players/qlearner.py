@@ -101,9 +101,8 @@ class QLearner:
         reward = None  # Calculate a reward for the move
         # Agent's move
         # print("agent")
-        row,col = self.get_move(board, p=True)
+        action = row,col = self.get_move(board, p=True) # Will be a good action?
         state = board.get_state()  # This is the state!
-        action = (row, col)  # Will be a good action?
         board.move(row, col, self.player)
         # print(board.get_txt())
         if board.is_winner(self.player):  # Agent wins
