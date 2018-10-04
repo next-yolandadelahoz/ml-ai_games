@@ -11,10 +11,12 @@ class Board:
         board: np.array NxN
             Initialization board, 0 matrix if none.
         """
-        if type(board)!=np.ndarray:
-            self.board = np.zeros((N,N), dtype=np.uint8)
-        else:
+        if type(board)==np.ndarray:
             self.board = board
+        elif type(board)==tuple:
+            self.board = np.array(board).reshape(N,N)
+        else:
+            self.board = np.zeros((N,N), dtype=np.uint8)
         self.N = self.board.shape[0]
         self.txt_symbols = ' XO'
         self.vals = list(range(self.N))  # Speedup iterations
