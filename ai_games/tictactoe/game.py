@@ -7,12 +7,13 @@ from players.random import Random
 import argparse
 
 
-def play_game(player1, player2, board):
+def play_game(player1, player2, board, print_board=False):
     """Play a game until endself.
     PARAMETERS:
     player1:
     player2:
     board:
+    print_board: whether to print the board on every turn.
 
     RETURN:
     winner: int
@@ -20,6 +21,8 @@ def play_game(player1, player2, board):
         2 (player2 wins)
         -1 (draw, no more moves)
     """
+    if print_board:
+        print(board)
     winner = 0
     iter = 0
     while winner==0:
@@ -30,6 +33,8 @@ def play_game(player1, player2, board):
             while not valid_move: # Do not trust player
                 row,col = p.get_move(board.copy())  # Modification-proof
                 valid_move = board.move(row, col, p.player)
+            if print_board:
+                print(board)
             if board.is_winner(p.player):
                 winner = p.player
         else:
@@ -55,7 +60,8 @@ if __name__=="__main__":
     winner, board = play_game(
         players.get(args.p1)(1),
         players.get(args.p2)(2),
-        Board()
+        Board(),
+        print_board=True
     )
 
     # TODO: clear screen
@@ -63,4 +69,4 @@ if __name__=="__main__":
         print("It's a draw")
     else:
         print("Player{} wins!".format(winner))
-    print("Board:\n{}".format(board.get_txt()))
+    # print("Board:\n{}".format(board.get_txt()))

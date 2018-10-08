@@ -6,7 +6,7 @@ class Human:
         self.player = player
 
     def get_move(self, board):
-        print(board.get_txt())
+        #print(board.get_txt())
         # TODO: clear screen
         cell = -1
         while cell not in range(9):
