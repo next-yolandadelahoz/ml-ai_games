@@ -74,7 +74,7 @@ class Board:
         return( Board(board=self.board.copy()) )
 
 
-    def get_txt(self):
+    def __str__(self):
         """Return a pretty string representation of the board.
         """
         row_sep = '\n'+'+'.join('-'*self.N)+'\n'
@@ -83,7 +83,7 @@ class Board:
                 self.txt_symbols[element] for element in self.board[row,:]
             ])
             for row in self.vals
-        ])
+        ])+'\n'
 
 
     def get_state(self):
