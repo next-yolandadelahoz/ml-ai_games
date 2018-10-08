@@ -7,6 +7,8 @@ import numpy as np
 
 class QLearner:
 
+    Q = None  # This is Q(state,action) -> score. Implemented as a dict
+
     def __init__(self, player, Qfile=None):
         self.set_player(player)
         if Qfile!=None:
