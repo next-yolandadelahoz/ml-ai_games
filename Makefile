@@ -52,6 +52,12 @@ virtualenv-create: ## Create a development environment (virtualenv).
 	# Link code to project library so it is in the PYTHONPATH
 	@ln -s $(PATH_LIBRARY) $(PATH_VENV)'/lib/python$(PYTHON_VERSION)/site-packages/'
 
+test:
+	# Make tictactoe game available
+	@echo $(PATH_PROJECT)
+	@ln -s $(PATH_PROJECT)'/ai_games/tictactoe/game.py' $(PATH_VENV)'/bin/tictactoe'
+	@chmod +x $(PATH_VENV)'/bin/tictactoe'
+
 
 #
 ### Run things
