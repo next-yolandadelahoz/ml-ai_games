@@ -5,4 +5,4 @@ This repo has experiments on agents trying to play games. Several techniques are
 
 
 ## List of games
-* [Tic-tac-toe](ai_games/tictactoe/README.md)
+* [Tic-tac-toe](ai_games/tictactoe)

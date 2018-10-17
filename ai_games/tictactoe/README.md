@@ -15,4 +15,5 @@ TODO
 
 
 ## Experiments
-* [On Q-Learning training](NB01-rl_tests.ipynb).
+* [Q-Learning training](NB01-rl_tests.ipynb).
+* [Inverse Reinforcement Learning](NB02-irl.ipynb).
