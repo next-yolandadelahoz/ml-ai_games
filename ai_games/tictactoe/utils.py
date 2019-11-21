@@ -19,36 +19,35 @@ def test_players(p1, p2, n_games):
 	return result
 
 
-def train_player_seconds(learner, teacher, train_func, seconds):
+def train_player_seconds(learner, teacher, train_func, seconds, checkpoint):
 	games_played = 0
 	time_stop = time.time() + seconds
 	while time.time() < time_stop:
 		# As player 1
 		learner.set_player(1)
 		teacher.set_player(2)
-		train_func(Board(), learner, teacher)
+		train_func(Board(), learner, teacher, seconds, checkpoint)
 		games_played += 1
 		# As player 2
 		teacher.set_player(1)
 		learner.set_player(2)
 		board = Board()
 		board.move(*teacher.get_move(board), player=1)
-		train_func(board, learner, teacher)
-		games_played += 1
+		train_func(board, learner, teacher, time.time(), checkpoint)
 	return games_played
 
 
-def train_player_games(learner, teacher, train_func, games):
+def train_player_games(learner, teacher, train_func, games, checkpoint):
 	time_start = time.time()
 	for game in range(games):
 		# As player 1
 		learner.set_player(1)
 		teacher.set_player(2)
-		train_func(Board(), learner, teacher)
+		train_func(Board(), learner, teacher, game, checkpoint)
 		# As player 2
 		teacher.set_player(1)
 		learner.set_player(2)
 		board = Board()
 		board.move(*teacher.get_move(board), player=1)
-		train_func(board, learner, teacher)
+		train_func(board, learner, teacher, game, checkpoint)
 	return time.time()-time_start

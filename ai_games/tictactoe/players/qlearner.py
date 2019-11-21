@@ -1,19 +1,23 @@
 
 from collections import defaultdict
 import random
-
+import dill
 import numpy as np
-
+import os
+from datetime import datetime
 
 class QLearner:
 
     Q = None  # This is Q(state,action) -> score. Implemented as a dict
+    n_iter = 0
+
 
     def __init__(self, player, Qfile=None):
         self.set_player(player)
-        if Qfile!=None:
-            # TODO: load from file ¿use pickle?
-            pass
+        self.qfile = Qfile
+
+        if self.qfile !=None:
+            self.Q = self.load_Q(self.qfile)
         else:
             # Q[state = hash(board)][action = (x,y)]
             self.Q = defaultdict(lambda : defaultdict(lambda : 0.0))
@@ -81,7 +85,7 @@ class QLearner:
         return old_Q - self.Q[state][action]
 
 
-    def _train_1_game(self, lr, f_df, board, opponent):
+    def _train_1_game(self, lr, f_df, board, opponent, games, checkpoint=10):
         """Update the Q function from the result of 1 played game.
         It is always QLearner turn.
 
@@ -128,16 +132,20 @@ class QLearner:
                 depth = 2
                 Q_diff_avg = 0
             else:  # Don't know reward, play more...
-                reward, Q_diff_avg, depth  = self._train_1_game(lr, f_df, board, opponent)
+                reward, Q_diff_avg, depth  = self._train_1_game(lr, f_df, board, opponent,  games, checkpoint)
                 depth += 1
         # I know how good the action is (reward)
         Q_diff = self._update_Q(state, action, reward, lr, f_df(depth))
         Q_diff_avg += Q_diff/(depth)
+
+        if games >= checkpoint:
+           self.save_Q()
+
         return (reward, Q_diff_avg, depth)
 
 
 
-    def _autotrain_1_game(self, lr, f_df, board):
+    def _autotrain_1_game(self, lr, f_df, board, games, checkpoint=10):
         """Train agent by playing against itself
         """
         reward = None  # Calculate a reward for the move
@@ -157,11 +165,30 @@ class QLearner:
             Q_diff_avg = 0
         else:
             self.player = 2 if self.player==1 else 1  # Now I'm opponent
-            reward, Q_diff_avg, depth  = self._autotrain_1_game(lr, f_df, board)
+            reward, Q_diff_avg, depth  = self._autotrain_1_game(lr, f_df, board,  games, checkpoint)
             depth += 1
             self.player = 2 if self.player==1 else 1  # Back to player
             reward = -reward
         # I know how good the action is (reward)
         Q_diff = self._update_Q(state, action, reward, lr, f_df(depth))
         Q_diff_avg += Q_diff/(depth)
+
+        if games >= checkpoint:
+           self.save_Q()
+
         return (reward, Q_diff_avg, depth)
+
+    def save_Q(self):  #save table
+
+        file_name = datetime.now().strftime('qtable_%H_%M_%d_%m_%Y.pkl')  # pkl file to save qtable
+
+        q_dir = 'qfiles'
+        if not os.path.exists(q_dir):
+            os.mkdir(q_dir)
+
+        with open(os.path.join(q_dir, file_name), 'wb') as file:
+            dill.dump(self.Q, file)
+
+    def load_Q(self, file_name): # load table
+        with open(os.path.join('qfiles', file_name), 'rb') as file:
+            self.Q = dill.load(file)
