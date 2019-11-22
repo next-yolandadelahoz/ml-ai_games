@@ -85,7 +85,7 @@ class QLearner:
         return old_Q - self.Q[state][action]
 
 
-    def _train_1_game(self, lr, f_df, board, opponent, games, checkpoint=10):
+    def _train_1_game(self, lr, f_df, board, opponent, games, ckpt_steps=10):
         """Update the Q function from the result of 1 played game.
         It is always QLearner turn.
 
@@ -132,20 +132,21 @@ class QLearner:
                 depth = 2
                 Q_diff_avg = 0
             else:  # Don't know reward, play more...
-                reward, Q_diff_avg, depth  = self._train_1_game(lr, f_df, board, opponent,  games, checkpoint)
+                reward, Q_diff_avg, depth  = self._train_1_game(lr, f_df, board, opponent,  games, ckpt_steps)
                 depth += 1
         # I know how good the action is (reward)
         Q_diff = self._update_Q(state, action, reward, lr, f_df(depth))
         Q_diff_avg += Q_diff/(depth)
 
-        if games >= checkpoint:
-           self.save_Q()
+        if games % ckpt_steps == 0: # save Q table each N game iterations (N is defined as ckpts_steps)
+           strategy_name = type(opponent).__name__.lower()
+           self.save_Q(strategy_name)
 
         return (reward, Q_diff_avg, depth)
 
 
 
-    def _autotrain_1_game(self, lr, f_df, board, games, checkpoint=10):
+    def _autotrain_1_game(self, lr, f_df, board, games, ckpt_steps=10):
         """Train agent by playing against itself
         """
         reward = None  # Calculate a reward for the move
@@ -165,7 +166,7 @@ class QLearner:
             Q_diff_avg = 0
         else:
             self.player = 2 if self.player==1 else 1  # Now I'm opponent
-            reward, Q_diff_avg, depth  = self._autotrain_1_game(lr, f_df, board,  games, checkpoint)
+            reward, Q_diff_avg, depth  = self._autotrain_1_game(lr, f_df, board,  games, ckpt_steps)
             depth += 1
             self.player = 2 if self.player==1 else 1  # Back to player
             reward = -reward
@@ -173,15 +174,14 @@ class QLearner:
         Q_diff = self._update_Q(state, action, reward, lr, f_df(depth))
         Q_diff_avg += Q_diff/(depth)
 
-        if games >= checkpoint:
-           self.save_Q()
+        if games % ckpt_steps == 0: # save Q table each N game iterations (N is defined as ckpts_steps)
+           strategy_name = 'rl'
+           self.save_Q(strategy_name)
 
         return (reward, Q_diff_avg, depth)
 
-    def save_Q(self):  #save table
-
-        file_name = datetime.now().strftime('qtable_%H_%M_%d_%m_%Y.pkl')  # pkl file to save qtable
-
+    def save_Q(self, strategy_name):  #save table
+        file_name = datetime.now().strftime(strategy_name + '_qtable_%H_%M_%d_%m_%Y.pkl')  # pkl file to save qtable
         q_dir = 'qfiles'
         if not os.path.exists(q_dir):
             os.mkdir(q_dir)
